@@ -1,0 +1,189 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Employee</title>
+    <link rel="stylesheet" href="./Resources/bootstrap-5.0.0-beta3-dist/css/bootstrap.min.css">
+    <script src="./Resources/jquery-3.6.0.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script type="text/javascript">
+        
+        function SubmitEmpdata() {
+            var url = "https://localhost:44324/api/employee/addemployee";
+            var reqdata = {
+                employeeCode: document.getElementById("empCode").value,
+                name: document.getElementById("empName").value,
+                email: document.getElementById("empEmail").value,
+                designation: document.getElementById("empDesignation").value,
+                joiningDate: document.getElementById("joinDate").value,
+                permanentAddress: document.getElementById("permAddr").value,
+                communicationAddress: document.getElementById("commAddr").value
+            }
+            var stringReqdata = JSON.stringify(reqdata);
+            
+            $.ajax({
+                async: false,
+                type: "POST",
+                url: url,
+                data: stringReqdata,
+                dataType: "json",
+                context: document.body,
+                contentType: 'application/json; charset=utf-8',
+                success: function (data, textStatus, jQxhr) {
+                    swal({
+                        title: "Employee Added Successfully!",
+                        icon: "success",
+                        button: "Ok",
+                    }).then(function (isConfirm) {
+                        if (isConfirm) {
+                            location.reload();
+                            location.href = './EmployeeList.html';
+                        }
+                    });
+                },
+                statusCode: {
+                    
+                    400: function (responseObject, textStatus, jqXHR) {
+                        swal({
+                            title: "Check Email Again!",
+                            icon: "warning",
+                            button: "Ok",
+                        }).then(function (isConfirm) {
+                            if (isConfirm) {
+                                location.reload();
+                            }
+                        });
+
+                    },
+                    409: function (responseObject, textStatus, jqXHR) {
+                        swal({
+                            title: "A record with the same Email Id or EmployeeCode is already present!",
+                            icon: "error",
+                            button: "Ok",
+                        }).then(function (isConfirm) {
+                            if (isConfirm) {
+                                location.reload();
+                            }
+                        });
+                        
+                    },
+                    404: function (responseObject, textStatus, jqXHR) {
+                        swal({
+                            title: "Page Not Found!",
+                            icon: "error",
+                            button: "Ok",
+                        }).then(function (isConfirm) {
+                            if (isConfirm) {
+                                location.reload();
+                            }
+                        });
+                        
+                    }
+                }
+            });
+            
+        }
+        
+    </script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color:antiquewhite">
+
+        <a class="navbar-brand" href="./Home.html"><img src="./Resources/logo/Crowe_Logo.png" style="height:40px; margin: 0px; margin-left: 20px" /></a>
+        <div class="d-flex" style="margin-left: 60%">
+            <h3>Crowe Employee Management Portal</h3>
+        </div>
+
+    </nav>
+    <div class="alert alert-success" role="alert" style="margin-top: 20px; margin-bottom: 20px;">
+        <center><h4 class="alert-heading">Register Employee</h4></center>
+    </div>
+    <div style="width: 70%; margin-left: auto; margin-right: auto; padding: 20px 0px;">
+        <button id="addEmpBtn" onclick="window.location.href='./EmployeeList.html'" class="btn btn-primary" style="height: 52px" title="Employee List">Manage Employees</button>
+        <form>
+            <div class="form-group" style="margin-top: 10px">
+                <input class="form-control" id="empCode" aria-describedby="ID" disabled>
+            </div>
+            <div class="form-group" style="margin-top: 10px">
+                <input class="form-control" id="empName" aria-describedby="empName" placeholder="Name" required>
+            </div>
+            <div class="form-group" style="margin-top: 10px">
+                <input type="email" class="form-control" id="empEmail" placeholder="Email" required>
+            </div>
+            <div class="form-group" style="margin-top: 10px">
+                <input class="form-control" id="empDesignation" list="designationList" placeholder="Designation" required>
+                <datalist id="designationList">
+                    <option>Trainee Engineer</option>
+                    <option>Software Engineer</option>
+                    <option>System Analyst</option>
+                    <option>Programmer Analyst</option>
+                    <option>Senior Software Engineer</option>
+                    <option>Project Lead</option>
+                    <option>Project Manager</option>
+                    <option>Program Manager</option>
+                    <option>Architect</option>
+                    <option>Technical Specialist</option>
+                    <option>Deliver Manager</option>
+                    <option>Delivery Head</option>
+                    <option>Business Analyst</option>
+                    <option>Director Technology</option>
+                    <option>Director</option>
+                    <option>Vice President</option>
+                    <option>President</option>
+                    <option>CEO</option>
+                </datalist>
+            </div>
+            <div class="form-group" style="margin-top: 10px">
+                <input type="datetime-local" class="form-control" id="joinDate" placeholder="JoiningDate Date: 0001-01-01T00:00:00" required>
+            </div>
+            <div class="form-group" style="margin-top: 10px">
+                <label for="permAddress">Permanent Address</label>
+                <input type="checkbox" id="myCheckPermAddr" onclick="showPermAddr()">
+                <input class="form-control" id="permAddr" placeholder="Permanent Address" style="display: none;" required>
+            </div>
+            <div class="form-group" style="margin-top: 10px">
+                <label for="commAddress">Communication Address</label>
+                <input type="checkbox" id="myCheckCommAddr" onclick="showCommAddr()">
+                <input class="form-control" id="commAddr" placeholder="Communication Address" style="display: none;" required>
+            </div>
+
+        </form>
+        <button onclick="SubmitEmpdata();" id="submitBtn" type="submit" value="Submit" class="btn btn-primary" style="margin-top: 10px">Add Employee</button>
+
+    </div>
+    <script>
+        function showPermAddr() {
+            var checkBox = document.getElementById('myCheckPermAddr');
+            var permAddrInpt = document.getElementById('permAddr');
+            if (checkBox.checked == true) {
+                permAddrInpt.style.display = "block";
+            } else {
+                permAddrInpt.style.display = "none";
+                permAddrInpt.value = '';
+            }
+        }
+
+        function showCommAddr() {
+            var checkBox = document.getElementById('myCheckCommAddr');
+            var commAddrInpt = document.getElementById('commAddr');
+            if (checkBox.checked == true) {
+                commAddrInpt.style.display = "block";
+            } else {
+                commAddrInpt.style.display = "none";
+                commAddrInpt.value = '';
+            }
+        }
+        var empIdStr = localStorage.getItem('lastEmpId');
+        localStorage.removeItem('lastEmpId');
+        var lastEmpId = parseInt(empIdStr)+1;
+        var a = ('00' + lastEmpId).slice(-3)
+
+        var getLastEmpIdInc = "CR-" + a;
+        document.getElementById('empCode').value = getLastEmpIdInc;
+
+        
+    </script>
+</body>
+</html>
